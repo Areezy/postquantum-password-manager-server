@@ -14,10 +14,10 @@ var userSchema = new Schema({
     },
     passphrase: {
         type: String,
-        required: true,
     },
     encrypted_data: {
-        type: Schema.Types.ObjectId,
+        type: String,
+        default: ''
     },
 });
 
