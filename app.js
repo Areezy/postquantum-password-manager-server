@@ -8,6 +8,8 @@ var cors = require("cors");
 const connectDatabase = require("./helpers/databaseHelpers");
 
 var usersRouter = require("./routes/usersRoute");
+var keyExchangeRouter = require("./routes/keyExchangeRoute");
+
 
 var app = express();
 
@@ -25,6 +27,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/users", usersRouter);
+app.use("/api/keyexchange", keyExchangeRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
