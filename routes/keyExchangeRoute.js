@@ -3,6 +3,6 @@ var router = express.Router();
 var keyExchangeController = require('../controllers/keyExchangeController');
 var jwtVerification = require('../middlewares/jwtVerification');
 
-router.post("/", keyExchangeController.performKEM);
+router.post("/",  jwtVerification, keyExchangeController.performKEM);
 
 module.exports = router;

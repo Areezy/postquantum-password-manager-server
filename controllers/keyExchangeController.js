@@ -1,34 +1,52 @@
-let bcrypt = require("bcrypt");
 const { KeyEncapsulation, Signature } = require("liboqs-node");
+const {encryptKey}  = require("../helpers/encryptionHelpers");
+let User = require("../models/userModel");
 
 exports.performKEM = async (req, res) => {
-  const KEMAlgorithm = new KeyEncapsulation("Kyber512");
   const signatureAlgorithm = new Signature("Dilithium2");
+  const KEMAlgorithm = new KeyEncapsulation("Kyber512");
 
-  const { cipherText, signature, secret, signaturePublicKey } = req.body;
+  const { signature, publicKey, signaturePublicKey } = req.body;
 
-  const cipherTextBuffer = Buffer.from(JSON.parse(cipherText).data);
+  const { _id } = req.user;
+
+  const publicKeyBuffer = Buffer.from(JSON.parse(publicKey).data);
+
   const signaturePublicKeyBuffer = Buffer.from(
     JSON.parse(signaturePublicKey).data
   );
+
   const signatureBuffer = Buffer.from(JSON.parse(signature).data);
-  const secretBuffer = Buffer.from(JSON.parse(secret).data);
 
   const isValid = signatureAlgorithm.verify(
-    cipherTextBuffer,
+    publicKeyBuffer,
     signatureBuffer,
     signaturePublicKeyBuffer
   );
 
   if (isValid) {
-    const secretKey = KEMAlgorithm.decapsulateSecret(cipherTextBuffer);
+    const { ciphertext, sharedSecret } =
+      KEMAlgorithm.encapsulateSecret(publicKeyBuffer);
 
-    if (Buffer.compare(secretKey, secretBuffer) === 0) {
-      console.log("same key was generated");
+    try {
+      const user = await User.findOne({ _id: _id });
+
+      let encryptedKey = encryptKey(
+        JSON.stringify(sharedSecret),
+        process.env.KEY_ENCRYPT_KEY
+      );
+
+      user.secret_key = encryptedKey;
+
+      await user.save();
+      let obj = {
+        ciphertext: JSON.stringify(ciphertext),
+        sharedSecret: JSON.stringify(sharedSecret),
+      };
+      res.status(200).send(obj);
+    } catch (error) {
+      console.log(error.message);
     }
-
-    //TODO: Encrypt and Save to Database.
-    res.status(200).send(secretKey);
   } else {
     res.status(401).send("Invalid Digital Signature!");
   }

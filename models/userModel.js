@@ -19,6 +19,10 @@ var userSchema = new Schema({
         type: String,
         default: ''
     },
+    secret_key: {
+        type: String,
+        default: ''
+    }
 });
 
 module.exports = mongoose.model("users", userSchema);
