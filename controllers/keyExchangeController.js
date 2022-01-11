@@ -1,5 +1,5 @@
 const { KeyEncapsulation, Signature } = require("liboqs-node");
-const {encryptKey}  = require("../helpers/encryptionHelpers");
+const { encryptKey } = require("../helpers/encryptionHelpers");
 let User = require("../models/userModel");
 
 exports.performKEM = async (req, res) => {
@@ -40,12 +40,12 @@ exports.performKEM = async (req, res) => {
 
       await user.save();
       let obj = {
-        ciphertext: JSON.stringify(ciphertext),
-        sharedSecret: JSON.stringify(sharedSecret),
+        ciphertext: JSON.stringify(ciphertext)
       };
       res.status(200).send(obj);
     } catch (error) {
       console.log(error.message);
+      res.status(500).send("Error");
     }
   } else {
     res.status(401).send("Invalid Digital Signature!");
