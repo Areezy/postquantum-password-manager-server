@@ -1,6 +1,7 @@
 const { KeyEncapsulation, Signature } = require("liboqs-node");
 const { encryptKey } = require("../helpers/encryptionHelpers");
 let User = require("../models/userModel");
+const { performance } = require("perf_hooks");
 
 exports.performKEM = async (req, res) => {
   const signatureAlgorithm = new Signature("Dilithium2");
@@ -18,15 +19,50 @@ exports.performKEM = async (req, res) => {
 
   const signatureBuffer = Buffer.from(JSON.parse(signature).data);
 
+  let startTime = performance.now();
+
   const isValid = signatureAlgorithm.verify(
     publicKeyBuffer,
     signatureBuffer,
     signaturePublicKeyBuffer
   );
 
+  let endTime = performance.now();
+
+  let elapsed = endTime - startTime;
+
+  console.log("\n");
+  console.log("\n");
+  console.log("\n");
+  console.log("-----------------------------------------------------------");
+
+  console.log(
+    `SERVER: Digital Signature verification time is ${elapsed.toFixed(
+      2
+    )} milliseconds`
+  );
+
   if (isValid) {
+    startTime = performance.now();
     const { ciphertext, sharedSecret } =
       KEMAlgorithm.encapsulateSecret(publicKeyBuffer);
+
+    endTime = performance.now();
+
+    elapsed = endTime - startTime;
+
+    console.log(
+      `SERVER: Encalpsulated key size is ${Buffer.byteLength(
+        sharedSecret
+      )} bytes`
+    );
+    console.log(
+      `SERVER: Key Encapsulation took ${elapsed.toFixed(2)} milliseconds`
+    );
+    console.log("-----------------------------------------------------------");
+    console.log("\n");
+    console.log("\n");
+    console.log("\n");
 
     try {
       const user = await User.findOne({ _id: _id });
@@ -40,7 +76,7 @@ exports.performKEM = async (req, res) => {
 
       await user.save();
       let obj = {
-        ciphertext: JSON.stringify(ciphertext)
+        ciphertext: JSON.stringify(ciphertext),
       };
       res.status(200).send(obj);
     } catch (error) {

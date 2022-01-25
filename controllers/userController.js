@@ -1,6 +1,5 @@
 let User = require("../models/userModel");
 let bcrypt = require("bcrypt");
-// const jwt = require("jsonwebtoken");
 const generateAccessToken = require("../helpers/authenticationHelpers");
 
 exports.createUser = async (req, res) => {
@@ -21,7 +20,7 @@ exports.createUser = async (req, res) => {
     newUserModel = User(newUser);
 
     const doc = await newUserModel.save();
-    console.log(doc);
+    // console.log(doc);
     res.status(200).send({ saved: true });
   } catch (error) {
     console.log(error.message);
