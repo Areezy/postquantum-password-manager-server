@@ -24,7 +24,7 @@ Once, this is done, a mongoDB database also needs to be setup.
 
 Other environment variables which need to be populated include 
 - "SECRET" which is used to sign the JWTs
-- "KEY_ENCRYPT_KEY" which is used to encrypt and decrypt the exchange post-quantum key. The encrypted version of the key is stored in a database.
+- "KEY_ENCRYPT_KEY" which is used to encrypt and decrypt the exchanged post-quantum key. The encrypted version of the key is stored in a database.
 
 Once the above is done,
 ```
