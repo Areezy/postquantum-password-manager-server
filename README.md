@@ -1,4 +1,4 @@
-# Password Manager Server
+# Post-Quantum Password Manager Server
 This is the backend server for my [post-quantum password manager](https://github.com/Areezy/password-manager). 
 
 It perfoms a key exchange with the [proxy server](https://github.com/Areezy/keyexchange-proxy) and verifies the digital signature to establish post-quantum keys for secure communication.
